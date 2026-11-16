@@ -22,6 +22,7 @@ Config por variables de entorno (ver keeper.env.example):
 """
 import asyncio
 import datetime as dt
+import fcntl
 import getpass
 import logging
 import os
@@ -32,6 +33,7 @@ import sys
 from telethon import TelegramClient, errors, functions, types
 
 log = logging.getLogger("keeper")
+_KEEPER_LOCK = None
 
 
 # ---------- config ----------
@@ -60,6 +62,23 @@ def make_client():
 
 
 # ---------- API helpers ----------
+
+
+def acquire_keeper_lock():
+    """Evita dos bucles keeper simultáneos usando la misma sesión Telethon."""
+    global _KEEPER_LOCK
+    session_path = os.path.abspath(os.path.expanduser(env("TG_SESSION", "keeper")))
+    lock_path = env("TG_KEEPER_LOCK", session_path + ".keeper.lock")
+    lock_path = os.path.abspath(os.path.expanduser(lock_path))
+    os.makedirs(os.path.dirname(lock_path), exist_ok=True)
+    _KEEPER_LOCK = open(lock_path, "a", encoding="utf-8")
+    try:
+        fcntl.flock(_KEEPER_LOCK.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        _KEEPER_LOCK.close()
+        _KEEPER_LOCK = None
+        sys.exit("Ya existe otra instancia de 'keeper run' usando esta sesión.")
+
 
 def is_live(story):
     return isinstance(getattr(story, "media", None), types.MessageMediaVideoStream)
@@ -199,6 +218,7 @@ async def cmd_rtmp(revoke):
 
 
 async def cmd_run():
+    acquire_keeper_lock()
     c = make_client()
     await c.connect()
     if not await c.is_user_authorized():
