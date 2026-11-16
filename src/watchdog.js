@@ -64,5 +64,8 @@ async function withTimeout(promise, ms) {
   } catch (error) {
     console.error('watchdog: no se pudo supervisar Chrome: ' + error.message);
     process.exitCode = 1;
+  } finally {
+    // Libera el socket CDP incluso si una evaluación quedó pendiente.
+    if (browser) await browser.close().catch(() => {});
   }
 })();
