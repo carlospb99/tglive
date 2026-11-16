@@ -53,10 +53,10 @@ log() { echo "tgstream: $*" >&2; }
 case "$MODE" in shot|rec|live) ;; *) echo "Uso: $0 shot|rec|live" >&2; exit 2 ;; esac
 
 # --- Limpieza: al salir por lo que sea, matar todo lo que arrancamos ---
-XPID=""; CPID=""; MPID=""
+XPID=""; CPID=""; MPID=""; WPID=""; FPID=""
 cleanup() {
   # shellcheck disable=SC2086
-  kill $MPID $CPID $XPID 2>/dev/null || true
+  kill $FPID $WPID $MPID $CPID $XPID 2>/dev/null || true
   rm -f "$FIFO"
 }
 trap cleanup EXIT
@@ -85,6 +85,12 @@ google-chrome --kiosk --no-first-run --no-default-browser-check \
 CPID=$!
 sleep 3
 node "$ROOT/src/wait-ready.js" || log "WARN: la página no marcó __streamReady"
+
+# En modo live, supervisar la salud de Chrome y de la página vía CDP.
+if [ "$MODE" = "live" ]; then
+  node "$ROOT/src/watchdog.js" &
+  WPID=$!
+fi
 
 # --- ffmpeg ---
 VIN=(-thread_queue_size 1024 -f x11grab -draw_mouse 0 -video_size "${W}x${H}" -framerate "$FPS" -i "$DISPLAY")
@@ -120,6 +126,21 @@ case "$MODE" in
     : "${RTMP_KEY:?falta RTMP_KEY (ver $ENV_FILE)}"
     start_music
     ffmpeg -hide_banner "${VIN[@]}" "${AIN[@]}" "${VENC[@]}" "${AENC[@]}" \
-      -f flv "${RTMP_URL%/}/${RTMP_KEY}"
+      -f flv "${RTMP_URL%/}/${RTMP_KEY}" &
+    FPID=$!
+    log "transmisión iniciada; watchdog PID=$WPID"
+    while kill -0 "$FPID" 2>/dev/null; do
+      if ! kill -0 "$WPID" 2>/dev/null; then
+        wait "$WPID" || true
+        log "ERROR: watchdog detectó que Chrome/página dejó de responder"
+        exit 1
+      fi
+      if ! kill -0 "$CPID" 2>/dev/null; then
+        log "ERROR: Chrome terminó inesperadamente"
+        exit 1
+      fi
+      sleep 5
+    done
+    wait "$FPID"
     ;;
 esac
