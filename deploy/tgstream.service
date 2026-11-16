@@ -1,0 +1,24 @@
+[Unit]
+Description=tgstream - Telegram Live Story 24/7
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=tgstream
+Group=tgstream
+EnvironmentFile=/etc/tgstream/tgstream.env
+# /run/tgstream (FIFO de música) y /var/lib/tgstream (perfil de Chrome, capturas)
+RuntimeDirectory=tgstream
+StateDirectory=tgstream
+WorkingDirectory=/var/lib/tgstream
+# Restos de un Xvfb anterior en :99 (si cambias DISPLAY_NUM, cambia esto también)
+ExecStartPre=-/bin/rm -f /tmp/.X99-lock /tmp/.X11-unix/X99
+ExecStart=/opt/tgstream/bin/run.sh live
+Restart=always
+RestartSec=10
+# Al parar/reiniciar mata también Chrome, Xvfb y music.sh
+KillMode=control-group
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target

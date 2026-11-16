@@ -1,0 +1,17 @@
+[Unit]
+Description=tgLive keeper - crea y mantiene vivo el Telegram Live Story
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=tgstream
+Group=tgstream
+EnvironmentFile=/etc/tgstream/keeper.env
+StateDirectory=tgstream-keeper
+StateDirectoryMode=0700
+ExecStart=/opt/tgstream/bin/keeper run
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

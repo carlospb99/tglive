@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Corre el keeper con la config de /etc/tgstream/keeper.env
+#   sudo -u tgstream /opt/tgstream/bin/keeper login|status|start|end|rtmp|run
+set -euo pipefail
+ROOT="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+ENV_FILE="${KEEPER_ENV:-/etc/tgstream/keeper.env}"
+if [ -r "$ENV_FILE" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$ENV_FILE"
+  set +a
+fi
+cd /tmp   # Telethon no necesita cwd; evita problemas si el cwd no es legible
+exec "$ROOT/keeper/.venv/bin/python" "$ROOT/keeper/keeper.py" "$@"

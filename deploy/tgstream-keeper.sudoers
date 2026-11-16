@@ -1,0 +1,2 @@
+# El keeper reinicia el stream cuando crea un live nuevo. Solo eso.
+tgstream ALL=(root) NOPASSWD: /usr/bin/systemctl restart tgstream.service

@@ -1,0 +1,12 @@
+{
+  "name": "tgstream",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Transmite una página web 24/7 como Telegram Live Story (Chrome + Xvfb + ffmpeg)",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright-core": "^1.49.0"
+  }
+}
