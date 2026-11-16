@@ -1,8 +1,16 @@
+![tgLive: tu web, en vivo 24/7 en Telegram](assets/banner.jpg)
+
 # tgLive
 
 Transmite una **página web 24/7 como Telegram Live Story**, con música de fondo, desde un servidor Linux sin GPU y sin ningún teléfono encendido.
 
 Es lo que mueve el live de tasas de [cambiocup.com](https://www.cambiocup.com) en el canal de QvaPay en Telegram: 1080x1920 a 60 fps, ~2 Mbps de subida, 5–6 núcleos de CPU.
+
+<p align="center">
+  <img src="assets/qvapay-live.jpg" alt="El canal de QvaPay en vivo en Telegram" width="180">
+  &nbsp;&nbsp;
+  <img src="assets/numeros.jpg" alt="24/7, 60 fps, 0 teléfonos, 0 GPUs" width="320">
+</p>
 
 ```
 Servidor Linux
@@ -16,6 +24,8 @@ Servidor Linux
 
 ## Por qué un keeper
 
+![Antes: el teléfono se duerme y el live se cierra. Después: el servidor crea el live por la API](assets/antes-despues.jpg)
+
 Si creas el live desde la app de Telegram, el live depende de que esa app siga viva: cuando el teléfono se duerme o el sistema mata Telegram, el live se cierra. Y el servidor RTMP de Telegram **sigue aceptando video aunque el live ya no exista**, así que ffmpeg no se entera.
 
 El keeper usa la API con tu usuario (los bots no pueden crear Live Stories):
@@ -23,6 +33,8 @@ El keeper usa la API con tu usuario (los bots no pueden crear Live Stories):
 - `stories.startLive` con `rtmp_stream` crea el live.
 - `phone.getGroupCallStreamRtmpUrl` con `live_story` da la URL y la key, **fijas por canal**.
 - `stories.getPeerStories` le dice si sigue vivo: un live activo es una story con `messageMediaVideoStream`.
+
+<p align="center"><img src="assets/keeper-ciclo.jpg" alt="Cada 30 segundos el keeper pregunta si hay live y, si no, lo crea" width="420"></p>
 
 ## Requisitos
 
