@@ -7,7 +7,7 @@ Transmite una **página web 24/7 como Telegram Live Story**, con música de fond
 Es lo que mueve el live de tasas de [cambiocup.com](https://www.cambiocup.com) en el canal de QvaPay en Telegram: 1080x1920 a 60 fps, ~2 Mbps de subida, 5–6 núcleos de CPU.
 
 <p align="center">
-  <img src="assets/qvapay-live.jpg" alt="El canal de QvaPay en vivo en Telegram" width="180">
+  <img src="assets/qvapay-live.jpg" alt="El canal de QvaPay en vivo en Telegram" width="427">
   &nbsp;&nbsp;
   <img src="assets/numeros.jpg" alt="24/7, 60 fps, 0 teléfonos, 0 GPUs" width="320">
 </p>
