@@ -9,7 +9,7 @@ Es lo que mueve el live de tasas de [cambiocup.com](https://www.cambiocup.com) e
 <p align="center">
   <img src="assets/live-en-telegram.jpg" alt="El live de cambiocup.com visto en Telegram, con comentarios" width="400">
   &nbsp;
-  <img src="assets/qvapay-live.jpg" alt="El canal de QvaPay con el aro LIVE en la lista de chats" width="400">
+  <img src="assets/qvapay-chats.jpg" alt="El canal de QvaPay con el aro LIVE en la lista de chats" width="400">
 </p>
 
 ```
